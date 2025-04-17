@@ -1,13 +1,12 @@
 const express = require('express');
-
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 dotenv.config();
 
-
-
-
 const app = express();
+app.use(express.json());
+
+
 const  { courseRouter } = require('./routes/course');
 const { adminRouter } = require('./routes/admin');
 const userRouter = require('./routes/user');
@@ -22,5 +21,6 @@ async function main() {
     app.listen(3000, ()=>{
         console.log("Server runing");
     }) 
+
 }
 main();
