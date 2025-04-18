@@ -5,8 +5,8 @@ const adminRouter = Router();
 const { AdminModel } = require("../Database/db")
 const jwt = require('jsonwebtoken');
 const JWT_Admin_SECRET = "random154tmchamp"
-
-
+const {Admin_middleware_file} = require('../middleware/admin');
+const { CourseModel } = require('../Database/db');
 adminRouter.post('/signup', async function(req,res){
     
     const givenSchema = z.object({
@@ -106,11 +106,23 @@ adminRouter.post('/signin', async function(req,res){
 
 
 // adminRouter.use(adminMiddleware) 
-adminRouter.post('/course', function(req,res){ // /
+adminRouter.post('/course',Admin_middleware_file , async function(req,res){ //
+    
+    const adminId = req.userId;
+    const  { title , description, imageUrl, Price} = req.body;
+    const course = await CourseModel.create({
+        title:title,
+        description:description,
+        Price:Price,
+        imageUrl:imageUrl,
+        creatorId:adminId
+    })
     res.json({
-        message : "signin endpoint"
+        message : "Course Created",
+        creatorId:course._id
     })
 })
+
 adminRouter.put('/course', function(req,res){ // /
     res.json({
         message : "signin endpoint"
@@ -118,7 +130,7 @@ adminRouter.put('/course', function(req,res){ // /
 })
 adminRouter.get('/course/bulk', function(req,res){ // /bulk
     res.json({
-        message : "si   gnin endpoint"
+        message : "signin endpoint"
     })
 })  
 

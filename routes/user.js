@@ -4,11 +4,12 @@ const Router = express.Router;
 const { z } = require('zod');
 const  bcrypt = require('bcrypt');
 const JWT_SECRET = "AFJDBDVDVMBCD";
-const { UserModel } = require('../Database/db');
+const { UserModel, PurchaseModel } = require('../Database/db');
+const { CourseModel } = require('../Database/db');
 // or
 // const { Router } = require('express');
 const userRouter = Router(); 
-
+const { middleware_file } = require('../middleware/user');
 
 userRouter.post('/signup', async function(req,res){
     
@@ -75,25 +76,6 @@ userRouter.post('/signup', async function(req,res){
 })
 
 
-// function middleware_file(req,res,next){
-//     const token = req.header.token;
-//     if(!token)  res.status(401).json({message : "Invalid token"})
-    
-//     try{
-//         const decoded_data = jwt.verify(token,JWT_SECRET);
-//         if(decoded_data){
-//             next();
-//         }
-//     }
-//     catch(error){
-//         res.status(401).json({
-//             message : "given token is wrong"
-//         })
-//     }
-// }
-// userRouter.use(middleware_file)
-
-
 userRouter.post('/signin', async function(req,res){
     const {email , password} = req.body;
     const found = await UserModel.findOne({
@@ -125,9 +107,27 @@ userRouter.post('/signin', async function(req,res){
     }
 
 })
-userRouter.get('/purchases', function(req,res){
+
+userRouter.get('/purchases',middleware_file, async function(req,res){
+    const userId = req.userId;
+    const title = req.body.title;
+    const found = await CourseModel.findOne({
+        title:title
+    })
+    if(!found){
+        return res.json({
+            message : "Course doest not exist"
+        })
+    }
+    // console.log(found._id);
+    
+    await PurchaseModel.create({
+        courseId : found._id,
+        userId : req.userId
+    })
     res.json({
-        message : "signin endpoint"
+        course_id : found._id,
+        userId : req.userId
     })
 })
 module.exports = userRouter
