@@ -6,10 +6,11 @@ const  bcrypt = require('bcrypt');
 const JWT_SECRET = "AFJDBDVDVMBCD";
 const { UserModel, PurchaseModel } = require('../Database/db');
 const { CourseModel } = require('../Database/db');
+const { middleware_file } = require('../middleware/user');
 // or
 // const { Router } = require('express');
 const userRouter = Router(); 
-const { middleware_file } = require('../middleware/user');
+ 
 
 userRouter.post('/signup', async function(req,res){
     
@@ -110,24 +111,22 @@ userRouter.post('/signin', async function(req,res){
 
 userRouter.get('/purchases',middleware_file, async function(req,res){
     const userId = req.userId;
-    const title = req.body.title;
-    const found = await CourseModel.findOne({
-        title:title
+    // const title = req.body.title;
+    const purchased_Courses = await PurchaseModel.find({
+        userId:userId
     })
-    if(!found){
-        return res.json({
-            message : "Course doest not exist"
-        })
-    }
-    // console.log(found._id);
+    console.log("Purchase");
     
-    await PurchaseModel.create({
-        courseId : found._id,
-        userId : req.userId
+    console.log(purchased_Courses);
+    
+    const courseData = await CourseModel.find({
+        _id:{$in: purchased_Courses.map(x => x.courseId)}
     })
-    res.json({
-        course_id : found._id,
-        userId : req.userId
-    })
+    console.log("courseData");
+    console.log(courseData);
+        return res.json({
+            purchased_Courses, 
+            courseData 
+        })
 })
 module.exports = userRouter

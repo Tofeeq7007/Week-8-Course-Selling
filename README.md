@@ -11,3 +11,9 @@
 - Complete the routes for user login, signup, purchase a course, see course (Extra points - Use express routing to
 better structure your routes)
 - Create the frontend
+
+Good to have 
+    - Use cookies intead of JWT for auth
+    - Add a rate limiting middleware
+    - Frontend in ejs (low Priority)
+    - Frontend in React (try High Priority)
