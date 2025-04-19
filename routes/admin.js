@@ -116,7 +116,7 @@ adminRouter.post('/course',Admin_middleware_file , async function(req,res){ //
     })
     res.json({
         message : "Course Created",
-        creatorId:course._id
+        courseId:course._id
     })
 })
 

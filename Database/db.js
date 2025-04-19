@@ -11,7 +11,13 @@ const userSchema = new Schema({
     email:{type:String , unique:true },
     password:String,
     firstName:String,
-    lastName:String
+    lastName:String,
+    //
+    purchaseCourses: [{
+        type:Schema.Types.ObjectId,
+        ref:'courses'
+    }]
+    //
 });
 
 const adminSchema = new Schema({

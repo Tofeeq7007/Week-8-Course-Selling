@@ -7,6 +7,7 @@ const JWT_SECRET = "AFJDBDVDVMBCD";
 const { UserModel, PurchaseModel } = require('../Database/db');
 const { CourseModel } = require('../Database/db');
 const { middleware_file } = require('../middleware/user');
+const course = require('./course');
 // or
 // const { Router } = require('express');
 const userRouter = Router(); 
@@ -129,4 +130,41 @@ userRouter.get('/purchases',middleware_file, async function(req,res){
             courseData 
         })
 })
+
+userRouter.get('/courses/purchases',middleware_file, async function(req,res){
+    const userId = req.userId;
+    const courseId = req.body.courseId;
+    // const title = req.body.title;
+    
+    await UserModel.updateOne({
+        _id:userId
+    },{
+        "$push":{
+            purchaseCourses:courseId
+        }
+    })
+    res.json({
+        message: "Purchase completed!"  
+    })
+})
+
+userRouter.get('/purchasesCourses',middleware_file, async function(req,res){
+    const userId = req.userId;
+    
+    const user = await UserModel.findOne({
+        _id:userId
+    })
+    console.log(user.purchaseCourses);
+    
+    const All_courses = await CourseModel.find({
+        _id:{
+            "$in": user.purchaseCourses
+        }
+    })
+    res.json({
+        message: All_courses
+    })
+})
+
+
 module.exports = userRouter
